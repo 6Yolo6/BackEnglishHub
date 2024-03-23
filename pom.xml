@@ -27,23 +27,30 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>3.0.3</version>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
         </dependency>
-<!--        mybatis-plus 是一个 MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。-->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+
+        <!--        mybatis-plus-spring-boot-starter：MyBatis-Plus 是一个 MyBatis 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。-->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.2</version>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.5</version>
         </dependency>
-<!--        OpenAI是一个人工智能公司，它的API可以用于生成文本、代码、图像、音频等。这个starter可以让你在Spring Boot应用中使用OpenAI的API。-->
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
-        </dependency>
-<!--        Spring Boot DevTools是一个可选的模块，可以提供额外的开发时工具。它包括了一些开发时的便利功能，比如自动重启应用、自动刷新浏览器、自动配置等。-->
+        <!--        Spring Boot DevTools 比如自动重启应用、自动刷新浏览器、自动配置等。-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -55,7 +62,7 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
-<!--        Lombok是一个Java库，可以自动插入编辑器和构建工具中，简化Java代码。-->
+<!--        Lombok用 Lombok 可以减少样板代码的编写 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -67,7 +74,7 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.40.0.0</version>
         </dependency>
-<!--        jwt -->
+<!--        jwt创建、解析、验证 JWT 的功能，并且支持对 JWT 进行签名和加密 -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
@@ -78,17 +85,31 @@
             <artifactId>java-jwt</artifactId>
             <version>3.4.0</version>
         </dependency>
-<!--        redis -->
+<!--        redis 来实现一些缓存、消息队列等功能，存储在内存，所以速度很快 -->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-data-redis</artifactId>-->
+<!--            <version>3.0.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
         </dependency>
 <!--        hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.10</version>
+        </dependency>
+        <!--引入knife4j依赖-->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <version>4.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -102,17 +123,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.ai</groupId>
-                <artifactId>spring-ai-bom</artifactId>
-                <version>${spring-ai.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>
