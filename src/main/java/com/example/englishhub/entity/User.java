@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 /**
  * <p>
@@ -20,7 +22,6 @@ import java.time.LocalDateTime;
 @TableName("user")
 @Tag(name = "User", description = "用户实体")
 public class User extends BaseEntity implements Serializable {
-
     /**
      * 用户名，用于登录
      */
@@ -67,13 +68,15 @@ public class User extends BaseEntity implements Serializable {
      * 创建时间
      */
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    @CreationTimestamp
+    private Timestamp createTime;
 
     /**
      * 更新时间
      */
     @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
+    @UpdateTimestamp
+    private Timestamp updateTime;
 
     /**
      * 是否管理员0-不是--1-是

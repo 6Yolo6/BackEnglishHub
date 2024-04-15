@@ -1,0 +1,75 @@
+package com.example.englishhub.security;
+
+import com.example.englishhub.exception.JwtValidationException;
+import com.example.englishhub.utils.JwtUtil;
+import com.example.englishhub.utils.ResultType;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.stereotype.Component;
+
+/**
+ * @Author: hahaha
+ * @Date: 2024/4/11 17:26
+ */
+
+@Slf4j
+@Component
+public class JwtRealm extends AuthorizingRealm {
+
+    @Resource
+    private JwtUtil jwtUtil;
+
+    /**
+     * 多重写一个support
+     * 标识这个Realm是专门用来验证JwtToken
+     * 不负责验证其他的token（UsernamePasswordToken）
+     */
+    @Override
+    public boolean supports(AuthenticationToken token) {
+        return token instanceof JwtToken;
+    }
+
+    /**
+     * 认证
+     */
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        String jwt = (String) token.getCredentials();
+        // 获取jwt中关于用户id，解码过程中如果token过期或者被篡改会抛出异常
+//        String id = null;
+        log.info("处理jwt认证", jwt);
+        try {
+            // Validate the token
+            String id = jwtUtil.validateToken(jwt);
+            return new SimpleAuthenticationInfo(jwt, jwt, getName());
+        }
+        catch (ExpiredJwtException e) {
+            throw new JwtValidationException(ResultType.UNAUTHORIZED.getCode(), "Token已过期，请重新登录");
+        } catch (JwtException e) {
+            throw new JwtValidationException(ResultType.UNAUTHORIZED.getCode(), "无效的Token");
+        }
+//        catch (Exception e) {
+//            throw new AuthenticationException("Unexpected error during authentication", e);
+//        }
+        // 查询用户
+//        User  user = userService.getById(id);
+//        if (user == null) {
+//            throw new BaseException(ResponseCodeEnum.BAD_REQUEST, "用户不存在");
+//        }
+    }
+
+    /**
+     * 授权时调用
+     */
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        return new SimpleAuthorizationInfo();
+    }
+}

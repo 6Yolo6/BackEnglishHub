@@ -2,10 +2,11 @@ package com.example.englishhub.utils;
 
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.example.englishhub.exception.JwtValidationException;
+import io.jsonwebtoken.*;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +18,16 @@ import java.util.Map;
  */
 @Configuration
 public class JwtUtil {
-
-    private static long EXPIRATION_TIME = 3600000 * 24; // 24 hour
+    // 10 seconds
+//    private static long EXPIRATION_TIME = 1000 * 10;
+    // 1 hour
+    private static long EXPIRATION_TIME = 3600000 * 1;
+    // 一天
+//    private static long EXPIRATION_TIME = 3600000 * 1;
 //private static long EXPIRATION_TIME = 10000 * 10;
-    private static String SECRET = "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjY34DFDSSSd";// 秘钥
+//    private static String SECRET = "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjY34DFDSSSd";// 秘钥
+    // 使用Base64编码的密钥
+    private static String SECRET = Base64.getEncoder().encodeToString("MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjY34DFDSSSd".getBytes());
 
     private static final String USER_ID = "id";
 
@@ -35,8 +42,16 @@ public class JwtUtil {
         HashMap<String, Object> map = new HashMap<>();
         // you can put any data in the map
         map.put(USER_ID, id);
-        String token = Jwts.builder().setClaims(map).setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS512, SECRET).compact();
+        // 1. setClaims(map)：将map中的数据存储到Claims中
+        // 2. setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))：设置过期时间
+        // 3. signWith(SignatureAlgorithm.HS512, SECRET)：设置加密算法和密钥
+        // 4. compact()：生成token
+        String token = Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setClaims(map)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SignatureAlgorithm.HS512, SECRET)
+                .compact();
         return token;
     }
 
@@ -46,32 +61,24 @@ public class JwtUtil {
      * @param token
      * @return
      */
+    // 优化验证逻辑
     public static String validateToken(String token) {
-
-        //AssertUtils.assertNotNull(token, ResultType.AGAIN_LOGIN, "Missing token");
-
-        if(StringUtils.isBlank(token)){
-            System.out.println("Missing token");
-        }
-
-        try {
-            Map<String, Object> body = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
-            String id = (String) (body.get(USER_ID));
-
-            if(StringUtils.isBlank(id)){
-                System.out.println("Wrong token");
-                return "";
-            }
-
-
-            return id;
-        }catch (Exception e){
-            System.out.println("Wrong token without id");
-            return "";
-        }
-
-
+        Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+        return claims.get(USER_ID, String.class);
+//        // 使用自定义异常
+//        if (StringUtils.isBlank(token)) {
+//            throw new JwtValidationException(ResultType.UNAUTHORIZED.getCode(), "Token为空");
+//        }
+//        try {
+//            Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+//            return claims.get(USER_ID, String.class);
+//        } catch (ExpiredJwtException e) {
+//            throw new JwtValidationException(ResultType.AGAIN_LOGIN.getCode(), "Token已过期，请重新登录");
+//        } catch (JwtException e) {
+//            throw new JwtValidationException(ResultType.UNAUTHORIZED.getCode(), "无效的Token");
+//        }
     }
+
 
 
     public static void main(String[] args) {

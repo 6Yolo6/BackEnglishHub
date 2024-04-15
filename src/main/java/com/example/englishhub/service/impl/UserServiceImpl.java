@@ -10,9 +10,7 @@ import com.example.englishhub.utils.JwtUtil;
 import com.example.englishhub.utils.MD5Util;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -30,11 +28,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Map<String, Object> register(User user) throws Exception {
         // 设置默认头像
-        user.setAvatar("default.png");
-        // 设置创建时间
-        user.setCreateTime(LocalDateTime.now());
-        // 设置更新时间
-        user.setUpdateTime(LocalDateTime.now());
+        user.setAvatar("https://hyf666.oss-cn-fuzhou.aliyuncs.com/english_hub/image/logo.png");
         // 设置默认为普通用户
         user.setIsAdmin(false);
         // 对密码进行加密
@@ -54,6 +48,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Cacheable(value = "myData", key = "#username")
     public User getByName(String username) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("username", username);
@@ -90,18 +85,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public User updateUser(User user) {
+    public User updateUser(User user) throws Exception {
 //        String token = request.getHeader("Authorization");
-////        System.out.println("token" + token);
-//        String userId = JwtUtil.validateToken(token);
-//        System.out.println(user);
+//        System.out.println("token" + token);
         User isUser = this.getById(user.getId());
 //        System.out.println(isUser);
         if (user.getPassword() != "") {//重置密码
-            String password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
+            String salt = UUID.randomUUID().toString();
+            isUser.setSalt(salt);
+            String password = MD5Util.getEncode(user.getPassword(), salt);
             isUser.setPassword(password);
         }
+        isUser.setAvatar(user.getAvatar());
         isUser.setEmail(user.getEmail());
+        isUser.setTelephone(user.getTelephone());
         isUser.setSex(user.getSex());
         isUser.setUsername(user.getUsername());
         this.updateById(isUser);

@@ -8,8 +8,10 @@ import com.example.englishhub.service.UserService;
 import com.example.englishhub.utils.JwtUtil;
 import com.example.englishhub.utils.MD5Util;
 import com.example.englishhub.utils.Result;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.example.englishhub.utils.Upload;
 
 //import javax.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,33 +32,32 @@ public class UserController {
     private HttpServletRequest request;
 
     /**
-     * 修改头像
+     * 上传头像
      */
-    @PostMapping("/updateAvatar")
-    public Result updateAvatar(@RequestParam(value = "file") MultipartFile file, Integer userId) {
+    @Operation(summary = "上传头像")
+    @PostMapping("/uploadAvatar")
+    public Result uploadAvatar(@RequestParam(value = "file") MultipartFile file) {
         Result result = new Result();
-//        fileUpload fileUpload=new fileUpload();
-//        String url= fileUpload.upload(file);
-//        if (userService.updateAvatar(userId, url)) {
-//            result.success("修改头像成功");
-//            result.setData(url);
-//        } else {
-//            result.fail("修改头像失败");
-//        }
+        Upload fileUpload=new Upload();
+        String url= fileUpload.upload(file,"image");
+        if (url != null) {
+            result.success("上传头像成功");
+            result.setData(url);
+        } else {
+            result.fail("上传头像失败");
+        }
         return result;
     }
 
     /**
      * 用户注册
      */
+    @Operation(summary = "用户注册")
     @PostMapping("/register")
     public Result register(@RequestBody User user) throws Exception {
 
         Result result = new Result();
-//        // 检查用户名是否已存在
-//        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-//        queryWrapper.eq(User::getUsername, user.getUsername());
-//        User existUser = userService.getOne(queryWrapper);
+        // 检查用户名是否已存在
         User existUser = userService.getByName(user.getUsername());
         if (existUser != null) {
             result.fail("用户名已存在");
@@ -72,6 +73,7 @@ public class UserController {
     /**
      * 用户登录
      */
+    @Operation(summary = "用户登录")
     @PostMapping("/login")
     public Result login(@RequestBody User user) throws Exception {
         System.out.println(user);
@@ -92,7 +94,7 @@ public class UserController {
                 isUser.setSalt(null);
                 isUser.setPassword(null);
                 map.put("user", isUser);
-                map.put("Authorization", JwtUtil.generateToken((isUser.getId()).toString()));
+                map.put("token", JwtUtil.generateToken((isUser.getId()).toString()));
                 result.setData(map);
 
             }
@@ -118,19 +120,11 @@ public class UserController {
     /**
      * 修改用户信息
      */
-    @PutMapping
-    public Result update(@RequestBody User user) {
+    @Operation(summary = "修改用户信息")
+    @PostMapping("/update")
+    public Result update(@RequestBody User user) throws Exception {
         Result result=new Result();
-//        // 从Session中获取Token
-//        String token = (String) request.getSession().getAttribute("token");
-//        // 验证Token的有效性
-//        String userId = JwtUtil.validateToken(token);
-//        if (StringUtils.isBlank(userId)) {
-//            result.fail("Token无效，请重新登录");
-//            return result;
-//        }
         String token = request.getHeader("token");
-
         String userId = JwtUtil.validateToken(token);
 
         // 验证用户权限
@@ -142,6 +136,7 @@ public class UserController {
         User isUser = userService.updateUser(user);
         if (isUser != null) {
             isUser.setPassword("");
+            isUser.setSalt("");
             result.setData(isUser);
             result.success("更新成功");
         }
@@ -151,28 +146,33 @@ public class UserController {
         return result;
     }
 
-
+    /**
+     * 验证Token
+     */
+    @Operation(summary = "验证Token")
     @GetMapping("/validate")
     public Result validate() {
         Result result = new Result();
         String token = request.getHeader("token");
-//        System.out.println("token" + token);
-        String userId = JwtUtil.validateToken(token);
-        if (StringUtils.isBlank(userId)) {
-            result.fail("Token无效，请重新登录");
-            return result;
-        }
+        System.out.println("token" + token);
+        JwtUtil.validateToken(token);
         result.success("Token有效");
         return result;
     }
 
+    /**
+     * 获取所有用户信息
+     */
+    @Operation(summary = "获取所有用户信息")
     @GetMapping("/getAll")
     public Result getAllUser(Integer pageNum, Integer pageSize) {
         Result result = new Result();
         Page<User> page = userService.getAllUser(pageNum, pageSize);
         List<User> user = page.getRecords();
+        // 隐藏密码，盐值
         for (User user1:user) {
             user1.setPassword("");
+            user1.setSalt("");
         }
         result.setData(page);
         result.success("查询成功");

@@ -23,7 +23,7 @@ public interface UserService extends IService<User> {
 
     Page<User> getAllUser(Integer pageNum, Integer pageSize);
 
-    User updateUser(User user);
+    User updateUser(User user) throws Exception;
 
     void deleteByIds(String ids);
 
