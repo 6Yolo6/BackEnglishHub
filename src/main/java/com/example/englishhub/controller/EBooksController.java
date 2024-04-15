@@ -75,7 +75,7 @@ public class EBooksController{
 
 
     /**
-     * 修改数据
+     * 更新数据
      *
      * @Body eBookVO 实体对象
      * @return 修改结果
