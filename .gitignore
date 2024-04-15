@@ -20,7 +20,8 @@ target/
 *.ipr
 # properties
 *.properties
-
+# 上传文件，忽略/src/main/java/com/example/englishhub/utils/Upload.java
+/src/main/java/com/example/englishhub/utils/Upload.java
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
