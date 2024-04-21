@@ -18,10 +18,10 @@ import java.util.Map;
  */
 @Configuration
 public class JwtUtil {
-    // 10 seconds
-//    private static long EXPIRATION_TIME = 1000 * 10;
+    // 30 秒
+    private static long EXPIRATION_TIME = 1000 * 30;
     // 1 hour
-    private static long EXPIRATION_TIME = 3600000 * 1;
+//    private static long EXPIRATION_TIME = 3600000 * 1;
     // 一天
 //    private static long EXPIRATION_TIME = 3600000 * 1;
 //private static long EXPIRATION_TIME = 10000 * 10;

@@ -12,11 +12,12 @@ import java.sql.Timestamp;
 @Data
 @ToString
 public class EBookVO {
-
+    private Integer id;
     private String title;
     private String author;
     private String filePath;
     private String fileType;
+    private Integer seriesId;   // 来自e_book_series表
     private String seriesName; // 来自e_book_series表
 
     private Timestamp createTime;

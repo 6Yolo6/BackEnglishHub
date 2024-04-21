@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.englishhub.entity.User;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +16,8 @@ import java.util.Map;
  * @since 2023-06-09 10:14:35
  */
 public interface UserService extends IService<User> {
-     Map<String, Object> register(User user) throws Exception;
+
+    Map<String, Object> register(User user) throws Exception;
 
      User getByName(String username);
 
@@ -25,7 +27,11 @@ public interface UserService extends IService<User> {
 
     User updateUser(User user) throws Exception;
 
-    void deleteByIds(String ids);
+    void markUserActive(int userId);
+
+    List<Integer> getActiveUserIdsForToday();
 
     Boolean updateAvatar(Integer userId, String avatar);
+
+
 }

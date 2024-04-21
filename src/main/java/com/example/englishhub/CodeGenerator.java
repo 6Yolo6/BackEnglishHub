@@ -50,13 +50,11 @@ public class CodeGenerator {
                             // ***ServiceImpl 包名
                             .serviceImpl("service.impl")
                             // Mapper 包名
-                            .mapper("mapper")
-                            // Controller 包名
-                            .controller("controller");
+                            .mapper("mapper");
                 })
                 .strategyConfig(builder -> {
                     // 设置需要生成的表名
-                    builder.addInclude("e_book_series")
+                    builder.addInclude("forgetting_curve")
                             // 设置过滤表前缀
                             .addTablePrefix("t_")
                             // Entity 配置

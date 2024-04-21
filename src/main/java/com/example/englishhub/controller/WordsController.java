@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.englishhub.utils.RedisUtils;
@@ -78,7 +79,7 @@ public class WordsController {
 
     // 清空用户搜索历史
     @Operation(summary = "清空用户搜索历史")
-    @GetMapping("/clearSearchHistory")
+    @PostMapping("/clearSearchHistory")
     public Result clearSearchHistory() {
         Result result = new Result();
         String token = request.getHeader("token");

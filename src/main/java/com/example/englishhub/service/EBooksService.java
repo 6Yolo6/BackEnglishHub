@@ -2,7 +2,6 @@ package com.example.englishhub.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.englishhub.entity.EBookVO;
 import com.example.englishhub.entity.EBooks;
 
 /**
@@ -16,8 +15,7 @@ public interface EBooksService extends IService<EBooks> {
 
     Page<EBooks> getAllEBooks(Integer pageNum, Integer pageSize);
 
-    boolean addEBook(EBookVO eBookVO);
+    boolean addEBook(EBooks eBooks);
 
-    boolean updateEBook(EBookVO eBookVO);
 }
 

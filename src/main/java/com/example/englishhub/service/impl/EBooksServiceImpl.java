@@ -39,38 +39,39 @@ public class EBooksServiceImpl extends ServiceImpl<EBooksMapper, EBooks> impleme
     }
 
     @Override
-    public boolean addEBook(EBookVO eBookVO) {
-        EBooks eBooks = createEBooksFromVO(eBookVO);
-        return eBooks != null && save(eBooks);
-    }
-
-    @Override
-    public boolean updateEBook(EBookVO eBookVO) {
-        EBooks eBooks = createEBooksFromVO(eBookVO);
-        return eBooks != null && updateById(eBooks);
-    }
-
-    private EBooks createEBooksFromVO(EBookVO eBookVO) {
-        // 通过EBookVO对象里的seriesName查e_book_series表获取seriesId
-        QueryWrapper<EBookSeries> SeriesQueryWrapper = new QueryWrapper<>();
-        SeriesQueryWrapper.eq("name", eBookVO.getSeriesName());
-        EBookSeries eBookSeries = eBookSeriesMapper.selectOne(SeriesQueryWrapper);
-
-        if (eBookSeries == null) {
-            // 如果没有找到对应的系列，返回null
-            return null;
+    public boolean addEBook(EBooks eBooks) {
+        QueryWrapper<EBooks> eBookQueryWrapper = new QueryWrapper<>();
+        // 判断是否有相同的电子书
+        eBookQueryWrapper.eq("title", eBooks.getTitle());
+        EBooks existingEBook = this.getOne(eBookQueryWrapper);
+        if (existingEBook != null) {
+            throw new RuntimeException("电子书已存在");
         }
-
-        // 创建一个新的EBooks对象，并设置数据
-        EBooks eBooks = new EBooks();
-        eBooks.setTitle(eBookVO.getTitle());
-        eBooks.setAuthor(eBookVO.getAuthor());
-        eBooks.setFilePath(eBookVO.getFilePath());
-        eBooks.setFileType(eBookVO.getFileType());
-        eBooks.setSeriesId(eBookSeries.getId()); // 设置系列ID
-
-        return eBooks;
+        return save(eBooks);
     }
+
+
+//    private EBooks createEBooksFromVO(EBookVO eBookVO) {
+//        // 通过EBookVO对象里的seriesName查e_book_series表获取seriesId
+//        QueryWrapper<EBookSeries> SeriesQueryWrapper = new QueryWrapper<>();
+//        SeriesQueryWrapper.eq("name", eBookVO.getSeriesName());
+//        EBookSeries eBookSeries = eBookSeriesMapper.selectOne(SeriesQueryWrapper);
+//
+//        if (eBookSeries == null) {
+//            // 如果没有找到对应的系列，返回null
+//            return null;
+//        }
+//
+//        // 创建一个新的EBooks对象，并设置数据
+//        EBooks eBooks = new EBooks();
+//        eBooks.setTitle(eBookVO.getTitle());
+//        eBooks.setAuthor(eBookVO.getAuthor());
+//        eBooks.setFilePath(eBookVO.getFilePath());
+//        eBooks.setFileType(eBookVO.getFileType());
+//        eBooks.setSeriesId(eBookSeries.getId()); // 设置系列ID
+//
+//        return eBooks;
+//    }
 
 }
 

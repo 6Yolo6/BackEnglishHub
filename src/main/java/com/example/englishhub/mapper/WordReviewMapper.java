@@ -3,6 +3,10 @@ package com.example.englishhub.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.englishhub.entity.WordReview;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -14,5 +18,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface WordReviewMapper extends BaseMapper<WordReview> {
-
+    @Select("SELECT * FROM WordReview WHERE nextReviewTime <= #{currentTime} AND userId = #{userId}")
+    List<WordReview> getAllReviewsForToday(LocalDateTime currentTime, int userId);
 }

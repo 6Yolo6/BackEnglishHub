@@ -53,10 +53,10 @@ public class User extends BaseEntity implements Serializable {
     private String telephone;
 
     /**
-     * 性别-0--女--1--男
+     * 性别
      */
-    @Schema(description = "性别：0表示女，1表示男")
-    private Byte sex;
+    @Schema(description = "性别：")
+    private String sex;
 
     /**
      * 头像

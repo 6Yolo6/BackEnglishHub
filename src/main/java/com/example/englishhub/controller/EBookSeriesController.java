@@ -65,6 +65,15 @@ public class EBookSeriesController {
      * @param id 主键
      * @return 单条数据
      */
+    @Operation(summary = "通过ID查询电子书系列")
+    @GetMapping("/getById")
+    public Result getById(Integer id) {
+        Result result = new Result();
+        EBookSeries eBookSeries = eBookSeriesService.getById(id);
+        result.setData(eBookSeries);
+        result.success("查询电子书系列成功");
+        return result;
+    }
 
 
     /**

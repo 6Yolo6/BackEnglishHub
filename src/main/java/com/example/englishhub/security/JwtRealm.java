@@ -1,6 +1,7 @@
 package com.example.englishhub.security;
 
 import com.example.englishhub.exception.JwtValidationException;
+import com.example.englishhub.service.UserService;
 import com.example.englishhub.utils.JwtUtil;
 import com.example.englishhub.utils.ResultType;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -12,6 +13,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,6 +27,9 @@ public class JwtRealm extends AuthorizingRealm {
 
     @Resource
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * 多重写一个support
@@ -48,6 +53,9 @@ public class JwtRealm extends AuthorizingRealm {
         try {
             // Validate the token
             String id = jwtUtil.validateToken(jwt);
+            log.info("jwt认证成功", jwt);
+            // 标记用户为活跃状态
+            userService.markUserActive(Integer.parseInt(id));
             return new SimpleAuthenticationInfo(jwt, jwt, getName());
         }
         catch (ExpiredJwtException e) {
@@ -55,6 +63,7 @@ public class JwtRealm extends AuthorizingRealm {
         } catch (JwtException e) {
             throw new JwtValidationException(ResultType.UNAUTHORIZED.getCode(), "无效的Token");
         }
+
 //        catch (Exception e) {
 //            throw new AuthenticationException("Unexpected error during authentication", e);
 //        }

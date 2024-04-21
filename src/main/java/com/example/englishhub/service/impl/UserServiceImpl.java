@@ -8,9 +8,13 @@ import com.example.englishhub.mapper.UserMapper;
 import com.example.englishhub.service.UserService;
 import com.example.englishhub.utils.JwtUtil;
 import com.example.englishhub.utils.MD5Util;
+import com.example.englishhub.utils.RedisUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -23,6 +27,9 @@ import java.util.*;
  */
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Cacheable(value = "myData", key = "#user.id")
     @Override
@@ -67,14 +74,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void deleteByIds(String ids) {
-        List<String> listIds = new ArrayList<>();
-        String[] aryIds = ids.split(",");
-        for(String id: aryIds){
-            listIds.add(id);
-        }
-        this.removeByIds(listIds);
+    public void markUserActive(int userId) {
+        String key = "active_users:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+        redisUtils.setBit(key, userId, true);
     }
+
+    @Override
+    public List<Integer> getActiveUserIdsForToday() {
+        List<Integer> activeUserIds = new ArrayList<>();
+        String key = "active_users:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+        // 遍历1000个用户
+        for (int i = 0; i < 1000; i++) {
+            Boolean isUserActive = redisUtils.getBit(key, i);
+            if (isUserActive != null && isUserActive) {
+                activeUserIds.add(i);
+            }
+        }
+        return activeUserIds;
+    }
+
 
     @Override
     public Boolean updateAvatar(Integer userId, String avatar) {
@@ -84,13 +102,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return true;
     }
 
+
     @Override
     public User updateUser(User user) throws Exception {
 //        String token = request.getHeader("Authorization");
 //        System.out.println("token" + token);
         User isUser = this.getById(user.getId());
 //        System.out.println(isUser);
-        if (user.getPassword() != "") {//重置密码
+        if (user.getPassword() != "") {//有密码，重置密码
             String salt = UUID.randomUUID().toString();
             isUser.setSalt(salt);
             String password = MD5Util.getEncode(user.getPassword(), salt);

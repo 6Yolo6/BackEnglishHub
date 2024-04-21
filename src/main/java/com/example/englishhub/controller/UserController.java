@@ -3,6 +3,7 @@ package com.example.englishhub.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.englishhub.entity.EBooks;
 import com.example.englishhub.entity.User;
 import com.example.englishhub.service.UserService;
 import com.example.englishhub.utils.JwtUtil;
@@ -36,11 +37,22 @@ public class UserController {
      */
     @Operation(summary = "上传头像")
     @PostMapping("/uploadAvatar")
-    public Result uploadAvatar(@RequestParam(value = "file") MultipartFile file) {
+    public Result uploadAvatar(@RequestParam(value = "file") MultipartFile file,
+                               @RequestParam(value = "id") Integer id) {
         Result result = new Result();
         Upload fileUpload=new Upload();
-        String url= fileUpload.upload(file,"image");
+        String url= fileUpload.upload(file);
         if (url != null) {
+            if (id != null) {
+                // 更新操作
+                User existingUser= userService.getById(id);
+                if (existingUser != null) {
+                    // 删除原来的文件
+                    fileUpload.delete(existingUser.getAvatar());
+                } else {
+                    result.fail("头像不存在");
+                }
+            }
             result.success("上传头像成功");
             result.setData(url);
         } else {
@@ -96,7 +108,8 @@ public class UserController {
                 map.put("user", isUser);
                 map.put("token", JwtUtil.generateToken((isUser.getId()).toString()));
                 result.setData(map);
-
+                // 标记用户为活跃用户
+                userService.markUserActive(isUser.getId());
             }
             else
                 result.againLogin("密码错误");
@@ -106,16 +119,9 @@ public class UserController {
     }
 
 
-    @PostMapping("/deleteByIds")
-    public Result deleteByIds(String ids) {
-        Result result = new Result();
-
-        userService.deleteByIds(ids);
-
-        result.success("删除成功");
-
-        return result;
-    }
+    /**
+     * 新增用户
+     */
 
     /**
      * 修改用户信息

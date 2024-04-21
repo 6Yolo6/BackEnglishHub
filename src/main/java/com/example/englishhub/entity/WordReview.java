@@ -27,8 +27,8 @@ public class WordReview extends BaseEntity {
     @Schema(description = "单词ID，关联words表或word表的id")
     private Integer wordId;
 
-    @Schema(description = "单词类别ID，关联categories表的id")
-    private Integer categoryId;
+    @Schema(description = "单词库类别ID,关联word_book_category表的id")
+    private Integer wordBookCategoryId;
 
     @Schema(description = "单词复习状态:1-forgotten,2-blurry,3-known,4-mastered")
     private Integer status;
@@ -36,17 +36,18 @@ public class WordReview extends BaseEntity {
     @Schema(description = "下次复习时间")
     private LocalDateTime nextReviewTime;
 
-    @Schema(description = "当前单词复习间隔索引，对应learning_plans表中的review_interval")
+    @Schema(description = "遗忘曲线复习间隔，根据用户动态调整，默认30,180,720,1440,2880,5760,10080,21600(分别对应30分钟,3小时,12小时,1天,2天,4天,7天,15天)")
+    private String reviewIntervals;
+
+    @Schema(description = "单词当前所处复习间隔索引")
     private Integer reviewIntervalIndex;
 
     @Schema(description = "上次复习时间")
-    private LocalDateTime lastReviewTime;
+    @UpdateTimestamp
+    private Timestamp lastReviewTime;
 
     @Schema(description = "创建时间")
     @CreationTimestamp
     private Timestamp createTime;
 
-    @Schema(description = "更新时间")
-    @UpdateTimestamp
-    private Timestamp updateTime;
 }

@@ -16,7 +16,7 @@ import java.util.List;
 @Mapper
 public interface EBooksMapper extends BaseMapper<EBooks> {
 
-    @Select("SELECT eb.*, ebs.name as seriesName " +
+    @Select("SELECT eb.*, ebs.name as seriesName, ebs.id as seriesId " +
             "FROM e_books eb " +
             "LEFT JOIN e_book_series ebs ON eb.series_id = ebs.id")
     List<EBookVO> getAllEBooks();

@@ -2,7 +2,6 @@ package com.example.englishhub.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.englishhub.entity.EBookVO;
 import com.example.englishhub.entity.EBooks;
 import com.example.englishhub.service.EBooksService;
 import com.example.englishhub.utils.Result;
@@ -57,14 +56,14 @@ public class EBooksController{
     /**
      * 新增数据
      *
-     * @Body eBookVO 实体对象
+     * @Body eBooks 实体对象
      * @return 新增结果
      */
     @Operation(summary = "新增电子书")
     @PostMapping("/add")
-    public Result add(@RequestBody EBookVO eBookVO) {
+    public Result add(@RequestBody EBooks eBooks) {
         Result result = new Result();
-        if (eBooksService.addEBook(eBookVO)) {
+        if (eBooksService.addEBook(eBooks)) {
             result.success("新增电子书成功");
         } else {
             result.fail("新增电子书失败");
@@ -77,14 +76,14 @@ public class EBooksController{
     /**
      * 更新数据
      *
-     * @Body eBookVO 实体对象
+     * @Body eBooks 实体对象
      * @return 修改结果
      */
     @Operation(summary = "更新电子书信息")
     @PostMapping("/update")
-    public Result update(@RequestBody EBookVO eBookVO) {
+    public Result update(@RequestBody EBooks eBooks) {
         Result result = new Result();
-        if (eBooksService.updateEBook(eBookVO)) {
+        if (eBooksService.updateById(eBooks)) {
             result.success("更新电子书信息成功");
         } else {
             result.fail("更新电子书信息失败");
@@ -105,16 +104,27 @@ public class EBooksController{
      * 上传电子书
      *
      * @param file 电子书文件
-     * @param fileType 文件类型
      * @return 上传结果
      */
     @Operation(summary = "上传电子书")
     @PostMapping("/uploadEBook")
-    public Result uploadEBook(MultipartFile file, String fileType) {
+    public Result uploadEBook(@RequestParam(value = "file") MultipartFile file,
+                              @RequestParam(value = "id") Integer id) {
+        System.out.println("file = " + file);
         Result result = new Result();
         Upload fileUpload=new Upload();
-        String url= fileUpload.upload(file, fileType);
+        String url= fileUpload.upload(file);
         if (url != null) {
+            if (id != null) {
+                // 更新操作
+                EBooks existingEBook = eBooksService.getById(id);
+                if (existingEBook != null) {
+                    // 删除原来的文件
+                    fileUpload.delete(existingEBook.getFilePath());
+                } else {
+                    result.fail("电子书不存在");
+                }
+            }
             result.success("上传电子书成功");
             result.setData(url);
         } else {
