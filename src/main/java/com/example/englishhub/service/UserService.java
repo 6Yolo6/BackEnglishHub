@@ -23,13 +23,13 @@ public interface UserService extends IService<User> {
 
      Map<String, Object> login(User user);
 
-    Page<User> getAllUser(Integer pageNum, Integer pageSize);
-
     User updateUser(User user) throws Exception;
 
     void markUserActive(int userId);
 
-    List<Integer> getActiveUserIdsForToday();
+    boolean isUserActive(int userId);
+
+    List<Integer> getActiveUserIds();
 
     Boolean updateAvatar(Integer userId, String avatar);
 

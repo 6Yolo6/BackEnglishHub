@@ -16,5 +16,5 @@ public interface ReadingProgressService extends IService<ReadingProgress> {
 
     ReadingProgress getProgress(Integer eBookId);
 
-    boolean addProgress(ReadingProgress progress);
+    boolean saveOrUpdateProgress(Integer eBookId, String progress);
 }

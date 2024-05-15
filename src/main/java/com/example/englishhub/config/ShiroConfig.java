@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 /**
- * shiro启用注解拦截控制器
  * shiro的三个重要配置
  * 1、Realm
  * 2、DefaultWebSecurityManager
@@ -32,8 +31,8 @@ import java.util.LinkedHashMap;
  */
 
 /**
- 1.用户请求，不携带token，就在JwtFilter处抛出异常/返回没有登录，让它去登陆
- 2.用户请求，携带token，就到JwtFilter中获取jwt，封装成JwtToken对象。然后使用JwtRealm进行认证
+ 1.用户请求，不携带token，就在JwtFilter处进行错误处理返回，让它去登陆
+ 2.用户请求，携带token，就到JwtFilter中获取jwt，使用JwtRealm进行认证，若token过期则返回401状态码
  3.在JwtRealm中进行认证判断这个token是否有效，
  */
 
@@ -70,9 +69,17 @@ public class ShiroConfig {
         filterMap.put("jwt", new JwtFilter());
         shiroFilter.setFilters(filterMap);
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
-
+        // 设置不拦截的请求，anon表示不拦截, authc表示拦截
         map.put("/user/login", "anon");
         map.put("/user/register", "anon");
+        map.put("/dailySentences/getPage", "anon");
+        map.put("/dailySentences/getByDate", "anon");
+        // 放开swagger，
+        map.put("/doc.html/**", "anon");
+        map.put("/webjars/**", "anon");
+        map.put("/swagger-resources/**", "anon");
+        map.put("/v3/**", "anon");
+        map.put("/favicon.ico", "anon");
         // 所有请求通过我们自己的JWT Filter
         map.put("/**", "jwt");
         shiroFilter.setFilterChainDefinitionMap(map);

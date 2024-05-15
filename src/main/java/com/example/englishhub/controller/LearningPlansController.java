@@ -5,6 +5,7 @@ import com.example.englishhub.entity.LearningPlans;
 import com.example.englishhub.service.LearningPlansService;
 import com.example.englishhub.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
  * @author hahaha
  * @since 2024-04-19 18:09:10
  */
+
 @RestController
 @RequestMapping("/learningPlans")
+@Tag(name = "学习计划管理")
 public class LearningPlansController{
     /**
      * 服务对象

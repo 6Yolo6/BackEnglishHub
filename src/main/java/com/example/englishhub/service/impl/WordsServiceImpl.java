@@ -3,6 +3,7 @@ package com.example.englishhub.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.englishhub.entity.WordRelation;
 import com.example.englishhub.entity.Words;
 import com.example.englishhub.mapper.WordsMapper;
 import com.example.englishhub.service.WordsService;
@@ -27,12 +28,6 @@ public class WordsServiceImpl extends ServiceImpl<WordsMapper, Words> implements
 
 
     @Override
-    public Page<Words> getAllWords(Integer pageNum, Integer pageSize) {
-        Page<Words> page = new Page<>(pageNum, pageSize);
-        return this.page(page);
-    }
-
-    @Override
     public Page<Words> searchByName(String word, Integer pageNum, Integer pageSize) {
         QueryWrapper<Words> wrapper = new QueryWrapper<>();
         Page<Words> page = new Page<>(pageNum, pageSize);
@@ -49,4 +44,6 @@ public class WordsServiceImpl extends ServiceImpl<WordsMapper, Words> implements
     public void deleteByIds(String ids) {
 
     }
+
+
 }

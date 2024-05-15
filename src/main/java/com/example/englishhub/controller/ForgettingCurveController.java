@@ -7,6 +7,7 @@ import com.example.englishhub.service.UserService;
 import com.example.englishhub.service.WordReviewService;
 import com.example.englishhub.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/forgettingCurve")
+@Tag(name = "遗忘曲线管理")
 public class ForgettingCurveController {
     /**
      * 服务对象
@@ -85,8 +87,8 @@ public class ForgettingCurveController {
     @GetMapping("/updateDailyRetentionRates")
     public Result updateDailyRetentionRates() {
         Result result = new Result();
-        // 获取所有活跃用户的id
-        List<Integer> userIds = userService.getActiveUserIdsForToday();
+        // 获取2小时内所有活跃用户的id
+        List<Integer> userIds = userService.getActiveUserIds();
         for (Integer userId : userIds) {
             List<WordReview> allWords = wordReviewService.getAllWordsForUser(userId);
             forgettingCurveService.calculateRetentionRatesAndSave(allWords);

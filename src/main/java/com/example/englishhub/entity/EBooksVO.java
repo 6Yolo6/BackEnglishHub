@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  */
 @Data
 @ToString
-public class EBookVO {
+public class EBooksVO {
     private Integer id;
     private String title;
     private String author;
@@ -19,6 +19,8 @@ public class EBookVO {
     private String fileType;
     private Integer seriesId;   // 来自e_book_series表
     private String seriesName; // 来自e_book_series表
+    private Integer categoryId; // 来自e_book_category表
+    private String categoryName; // 来自e_book_category表
 
     private Timestamp createTime;
     private Timestamp updateTime;

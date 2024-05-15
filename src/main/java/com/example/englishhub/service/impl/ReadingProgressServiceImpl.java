@@ -37,14 +37,25 @@ public class ReadingProgressServiceImpl extends ServiceImpl<ReadingProgressMappe
     }
 
     @Override
-    public boolean addProgress(ReadingProgress progress) {
+    public boolean saveOrUpdateProgress(Integer eBookId, String progress) {
         QueryWrapper<ReadingProgress> progressQueryWrapper = new QueryWrapper<>();
-        progressQueryWrapper.eq("user_id", progress.getUserId());
-        progressQueryWrapper.eq("e_book_id", progress.getEBookId());
+        String token = request.getHeader("token");
+        String userId = JwtUtil.validateToken(token);
+        progressQueryWrapper.eq("user_id", Integer.parseInt(userId));
+        progressQueryWrapper.eq("e_book_id", eBookId);
+        // 判断是否有相同的阅读进度
         ReadingProgress existingProgress = this.getOne(progressQueryWrapper);
         if (existingProgress != null) {
-            throw new RuntimeException("用户阅读进度已存在");
+            System.out.println("已有阅读进度，更新阅读进度");
+            existingProgress.setProgress(progress);
+            return this.updateById(existingProgress);
+        } else {
+            System.out.println("没有阅读进度，新增阅读进度");
+            ReadingProgress newProgress = new ReadingProgress();
+            newProgress.setUserId(Integer.parseInt(userId));
+            newProgress.setEBookId(eBookId);
+            newProgress.setProgress(progress);
+            return this.save(newProgress);
         }
-        return save(progress);
     }
 }

@@ -25,6 +25,8 @@ import java.util.List;
 @Service
 public class ForgettingCurveServiceImpl extends ServiceImpl<ForgettingCurveMapper, ForgettingCurve> implements ForgettingCurveService {
 
+    private static final double FORGETTING_RATE_ADJUSTMENT = 30.0;
+
     @Override
     public void saveForgettingCurveData(WordReview wordReview, double retentionRate) {
         ForgettingCurve forgettingCurve = new ForgettingCurve();
@@ -45,7 +47,6 @@ public class ForgettingCurveServiceImpl extends ServiceImpl<ForgettingCurveMappe
     @Override
     public void calculateRetentionRatesAndSave(List<WordReview> allWords) {
         LocalDateTime now = LocalDateTime.now();
-
         for (WordReview review : allWords) {
             if (review.getStatus() != 4) { // 过滤掉已掌握的单词
                 double retentionRate = calculateRetentionRate(review, now);
@@ -59,12 +60,14 @@ public class ForgettingCurveServiceImpl extends ServiceImpl<ForgettingCurveMappe
         if (review.getNextReviewTime() == null) {
             return 1.0; // 如果已掌握或未设置复习时间，假设记忆保持率完整
         }
+        // 计算自上次复习以来的时间间隔
         long minutesSinceLastReview = ChronoUnit.MINUTES.between((Temporal) review.getLastReviewTime(), now);
+        // 计算距离下次复习的时间间隔
         long minutesUntilNextReview = ChronoUnit.MINUTES.between(now, review.getNextReviewTime());
-        // 简化模型，使用对数减缓衰减速度
-        double forgettingRate = Math.log(minutesUntilNextReview / 30.0 + 1);
+        // 简化模型，使用对数减缓衰减速度计算出遗忘率
+        double forgettingRate = Math.log(minutesUntilNextReview / FORGETTING_RATE_ADJUSTMENT + 1);
 
-        // 计算当前记忆保持率，遗忘率越大，记忆保持率越小
+        // 计算当前记忆保留率，遗忘率越大，即自上次复习以来的时间越长，记忆保留率越小
         return Math.exp(-forgettingRate * minutesSinceLastReview / minutesUntilNextReview);
     }
 }

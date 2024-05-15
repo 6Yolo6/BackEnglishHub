@@ -28,20 +28,21 @@ public class LearningPlans extends BaseEntity {
      */
     private Integer userId;
 
-    /**
-     * 学习计划标题
-     */
-    private String planTitle;
 
     /**
-     * 关联word_book_category表里的id，学习单词库的某类别——高频，核心，闪过等
+     * 关联word_books表里的id，学习某本单词书
      */
-    private Integer wordBookCategoryId;
+    private Integer wordBookId;
 
     /**
-     * 每日学习和复习总词数
+     * 每日新学词数
      */
-    private Integer dailyWords;
+    private Integer daily_new_words;
+
+    /**
+     * 每日复习词数
+     */
+    private Integer daily_review_words;
 
     /**
      * 计划开始日期

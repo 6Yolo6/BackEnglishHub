@@ -1,30 +1,29 @@
 package com.example.englishhub.utils;
 
-
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.example.englishhub.exception.JwtValidationException;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * jwt工具类
  *
- * @author zhangmingcheng
+ * @author hahaha
  */
+@Slf4j
 @Configuration
 public class JwtUtil {
     // 30 秒
-    private static long EXPIRATION_TIME = 1000 * 30;
-    // 1 hour
-//    private static long EXPIRATION_TIME = 3600000 * 1;
+//    private static long EXPIRATION_TIME = 1000 * 30;
+    // 6 hour
+    private static long EXPIRATION_TIME = 3600000 * 6;
     // 一天
-//    private static long EXPIRATION_TIME = 3600000 * 1;
-//private static long EXPIRATION_TIME = 10000 * 10;
+
 //    private static String SECRET = "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjY34DFDSSSd";// 秘钥
     // 使用Base64编码的密钥
     private static String SECRET = Base64.getEncoder().encodeToString("MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjY34DFDSSSd".getBytes());
@@ -56,6 +55,24 @@ public class JwtUtil {
     }
 
     /**
+     * 检查token是否即将过期
+     * @param token
+     * 60分钟
+     */
+    public static boolean isTokenExpiring(String token) {
+        Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+        Date expiration = claims.getExpiration();
+        long diff = expiration.getTime() - System.currentTimeMillis();
+        // 60分钟
+        if (diff < 1000 * 60 * 60) {
+            log.info("token即将过期");
+            return true;
+        }
+//        log.info("token未即将过期");
+        return false;
+    }
+
+    /**
      * 校验jwtToken
      *
      * @param token
@@ -78,8 +95,6 @@ public class JwtUtil {
 //            throw new JwtValidationException(ResultType.UNAUTHORIZED.getCode(), "无效的Token");
 //        }
     }
-
-
 
     public static void main(String[] args) {
         String id = "hahaha15";

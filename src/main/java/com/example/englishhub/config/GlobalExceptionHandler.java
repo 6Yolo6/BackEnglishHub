@@ -31,13 +31,12 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> handleJwtValidationException(JwtValidationException e) {
         // 创建一个响应对象，将异常中的状态码和消息设置到响应中
-        log.error("JwtValidationException: {}", e.getMessage());
         Map<String, Object> response = new HashMap<>();
         response.put("statusCode", e.getStatusCode());
         response.put("message", e.getMessage());
-
+        log.error("JwtValidationException: ", e);
         // 返回响应
-        return ResponseEntity.status(Integer.parseInt(e.getStatusCode())).body(response);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }
 

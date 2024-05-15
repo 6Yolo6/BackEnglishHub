@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * @Description: JwtRealm
+ * shiro的Realm，用于处理JwtToken的认证和授权
  * @Author: hahaha
  * @Date: 2024/4/11 17:26
  */
@@ -34,7 +36,6 @@ public class JwtRealm extends AuthorizingRealm {
     /**
      * 多重写一个support
      * 标识这个Realm是专门用来验证JwtToken
-     * 不负责验证其他的token（UsernamePasswordToken）
      */
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -53,7 +54,7 @@ public class JwtRealm extends AuthorizingRealm {
         try {
             // Validate the token
             String id = jwtUtil.validateToken(jwt);
-            log.info("jwt认证成功", jwt);
+            log.info("jwt认证成功，用户id：", id);
             // 标记用户为活跃状态
             userService.markUserActive(Integer.parseInt(id));
             return new SimpleAuthenticationInfo(jwt, jwt, getName());
@@ -63,15 +64,6 @@ public class JwtRealm extends AuthorizingRealm {
         } catch (JwtException e) {
             throw new JwtValidationException(ResultType.UNAUTHORIZED.getCode(), "无效的Token");
         }
-
-//        catch (Exception e) {
-//            throw new AuthenticationException("Unexpected error during authentication", e);
-//        }
-        // 查询用户
-//        User  user = userService.getById(id);
-//        if (user == null) {
-//            throw new BaseException(ResponseCodeEnum.BAD_REQUEST, "用户不存在");
-//        }
     }
 
     /**

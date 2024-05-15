@@ -9,13 +9,16 @@ import com.example.englishhub.service.UserService;
 import com.example.englishhub.utils.JwtUtil;
 import com.example.englishhub.utils.MD5Util;
 import com.example.englishhub.utils.RedisUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -25,6 +28,7 @@ import java.util.*;
  * @author hahaha
  * @since 2023-06-09 10:14:35
  */
+@Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
@@ -66,32 +70,62 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return null;
     }
 
-    @Override
-    public Page<User> getAllUser(Integer pageNum, Integer pageSize) {
-
-        Page<User> page = new Page<>(pageNum, pageSize);
-        return this.page(page);
-    }
 
     @Override
     public void markUserActive(int userId) {
-        String key = "active_users:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+        // 只保留到分钟
+        String key = "active_users:" + LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+//        String key = "active_users:" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         redisUtils.setBit(key, userId, true);
+        log.info("用户id为{}的用户已标记活跃--{}", userId, key);
+        // 设置2小时的过期时间
+        redisUtils.expire(key, 2, TimeUnit.HOURS);
     }
 
     @Override
-    public List<Integer> getActiveUserIdsForToday() {
-        List<Integer> activeUserIds = new ArrayList<>();
-        String key = "active_users:" + LocalDate.now().format(DateTimeFormatter.ISO_DATE);
-        // 遍历1000个用户
-        for (int i = 0; i < 1000; i++) {
-            Boolean isUserActive = redisUtils.getBit(key, i);
-            if (isUserActive != null && isUserActive) {
-                activeUserIds.add(i);
+    public boolean isUserActive(int userId) {
+        // 当前时间
+        LocalDateTime currentTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        for (int i = 0; i < 2; i++) {
+            // 遍历过去2小时内的键
+            String key = "active_users:" + currentTime.minusHours(i).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            if (redisUtils.hasKey(key)) {
+                Boolean isUserActive = redisUtils.getBit(key, userId);
+                if (isUserActive != null && isUserActive) {
+                    log.info("用户id为{}的用户在过去2小时内活跃过", userId);
+                    return true;
+                }
             }
         }
+        log.info("用户id为{}的用户在过去2小时内未活跃", userId);
+        return false;
+    }
+
+    @Override
+    public List<Integer> getActiveUserIds() {
+        List<Integer> activeUserIds = new ArrayList<>();
+
+        // 当前时间
+        LocalDateTime currentTime = LocalDateTime.now();
+        for (int i = 0; i < 2; i++) {
+            // 遍历过去2小时内的键
+            String key = "active_users:" + currentTime.minusHours(i).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            if (redisUtils.hasKey(key)) {
+                // 遍历1000个用户
+                for (int j = 0; j < 1000; j++) {
+                    Boolean isUserActive = redisUtils.getBit(key, j);
+                    if (isUserActive != null && isUserActive) {
+                        activeUserIds.add(j);
+                    }
+                }
+            }
+        }
+
         return activeUserIds;
     }
+
+
 
 
     @Override

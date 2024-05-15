@@ -22,14 +22,11 @@ import java.sql.Timestamp;
 @Tag(name = "Word", description = "单词实体")
 public class Word extends BaseEntity {
 
-    @Schema(description = "类别ID，关联categories表的id")
-    private Integer categoryId;
-
     @Schema(description = "单词")
     private String word;
 
     @Schema(description = "单词id，关联到words表详细信息，如果有的话")
-    private Integer wordId;
+    private Integer wordsId;
 
     @Schema(description = "英音音标")
     private String phoneticUk;

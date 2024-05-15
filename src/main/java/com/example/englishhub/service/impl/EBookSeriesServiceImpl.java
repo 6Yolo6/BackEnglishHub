@@ -35,28 +35,17 @@ public class EBookSeriesServiceImpl extends ServiceImpl<EBookSeriesMapper, EBook
         return this.getOne(wrapper);
     }
 
-    @Override
-    public Page<EBookSeries> getPageEBookSeries(Integer pageNum, Integer pageSize) {
-        QueryWrapper<EBookSeries> queryWrapper = new QueryWrapper<>();
-        Page<EBookSeries> page = new Page<>(pageNum, pageSize);
-        return this.page(page, queryWrapper);
-    }
 
     @Override
     public boolean addSeries(EBookSeries eBookSeries) {
-        try {
-            EBookSeries isExist = getByName(eBookSeries.getName());
-            if (isExist != null) {
-                throw new Exception("电子书系列：" + eBookSeries.getName() + "已存在");
-            } else {
-                // 默认useful为1
-                eBookSeries.setUseful(true);
-                save(eBookSeries);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        EBookSeries isExist = getByName(eBookSeries.getName());
+        if (isExist != null) {
+            System.out.println("电子书系列：" + eBookSeries.getName() + "已存在");
+        } else {
+            save(eBookSeries);
+            return true;
         }
+        return false;
     }
 
     @Override

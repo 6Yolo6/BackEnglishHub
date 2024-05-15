@@ -2,11 +2,14 @@ package com.example.englishhub.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.englishhub.entity.EBooksVO;
 import com.example.englishhub.entity.EBooks;
 import com.example.englishhub.service.EBooksService;
 import com.example.englishhub.utils.Result;
 import com.example.englishhub.utils.Upload;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/eBooks")
+@Tag(name = "电子书管理")
 public class EBooksController{
     /**
      * 服务对象
@@ -35,10 +39,10 @@ public class EBooksController{
      * @return 所有数据
      */
     @Operation(summary = "分页查询所有电子书")
-    @GetMapping("/getAll")
-    public Result getAll(Integer pageNum, Integer pageSize) {
+    @GetMapping("/getPage")
+    public Result getPage(Integer pageNum, Integer pageSize) {
         Result result = new Result();
-        Page<EBooks> eBooksPage = eBooksService.getAllEBooks(pageNum, pageSize);
+        Page<EBooksVO> eBooksPage = eBooksService.getAllEBooks(pageNum, pageSize);
         result.setData(eBooksPage);
         result.success("查询所有电子书成功");
         return result;
@@ -113,6 +117,7 @@ public class EBooksController{
         System.out.println("file = " + file);
         Result result = new Result();
         Upload fileUpload=new Upload();
+        // 上传文件到阿里云oss，返回文件url
         String url= fileUpload.upload(file);
         if (url != null) {
             if (id != null) {

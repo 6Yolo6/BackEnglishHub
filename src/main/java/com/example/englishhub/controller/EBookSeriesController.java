@@ -6,6 +6,7 @@ import com.example.englishhub.entity.EBookSeries;
 import com.example.englishhub.service.EBookSeriesService;
 import com.example.englishhub.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +18,10 @@ import java.util.List;
  * @author makejava
  * @since 2024-04-15 15:59:29
  */
+
 @RestController
 @RequestMapping("/eBookSeries")
+@Tag(name = "电子书系列管理")
 public class EBookSeriesController {
     /**
      * 服务对象
@@ -28,16 +31,16 @@ public class EBookSeriesController {
 
 
     /**
-     * 查询所有数据
+     * 查询所有有效数据
      * @return 所有数据
      */
-    @Operation(summary = "查询所有电子书系列")
+    @Operation(summary = "查询所有有效电子书系列")
     @GetMapping("/getAll")
     public Result getAll() {
         Result result = new Result();
         List<EBookSeries> eBookSeriesList = eBookSeriesService.getAllSeries();
         result.setData(eBookSeriesList);
-        result.success("查询所有电子书系列成功");
+        result.success("查询所有有效电子书系列成功");
         return result;
     }
 
@@ -52,7 +55,7 @@ public class EBookSeriesController {
     @GetMapping("/getPage")
     public Result getPage(Integer pageNum, Integer pageSize) {
         Result result = new Result();
-        Page<EBookSeries> eBookSeriesPage = eBookSeriesService.getPageEBookSeries(pageNum, pageSize);
+        Page<EBookSeries> eBookSeriesPage = eBookSeriesService.page(new Page<>(pageNum, pageSize));
         result.setData(eBookSeriesPage);
         result.success("查询所有电子书系列成功");
         return result;
@@ -87,14 +90,12 @@ public class EBookSeriesController {
     public Result add(@RequestBody EBookSeries eBookSeries) {
         Result result = new Result();
         if (eBookSeriesService.addSeries(eBookSeries)) {
-            result.setData(eBookSeries);
             result.success("新增电子书系列成功");
         } else {
             result.fail("新增电子书系列失败");
         }
         return result;
     }
-
 
 
     /**

@@ -18,8 +18,6 @@ public interface EBookSeriesService extends IService<EBookSeries> {
 
     List<EBookSeries> getAllSeries();
 
-    Page<EBookSeries> getPageEBookSeries(Integer pageNum, Integer pageSize);
-
     boolean addSeries(EBookSeries eBookSeries);
 
     boolean deleteByIds(String ids);

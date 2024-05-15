@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.englishhub.entity.ForgettingCurve;
 import com.example.englishhub.entity.WordReview;
+import com.example.englishhub.entity.WordReviewVO;
 import com.example.englishhub.mapper.WordReviewMapper;
 import com.example.englishhub.service.ForgettingCurveService;
 import com.example.englishhub.service.LearningPlansService;
@@ -41,7 +42,15 @@ public class WordReviewServiceImpl extends ServiceImpl<WordReviewMapper, WordRev
     private HttpServletRequest request;
 
     @Override
-    public void adjustReviewIntervals(WordReview wordReview) {
+    public void adjustReviewIntervals(Integer wordId, Integer wordBookId) {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.validateToken(token);
+        QueryWrapper<WordReview> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("wordId", wordId);
+        queryWrapper.eq("userId", Integer.parseInt(userId));
+        queryWrapper.eq("wordBookId", wordBookId);
+
+        WordReview wordReview = this.getOne(queryWrapper);
 
         List<Integer> intervals = Arrays.stream(wordReview.getReviewIntervals().split(","))
                 .map(Integer::parseInt)
@@ -52,6 +61,7 @@ public class WordReviewServiceImpl extends ServiceImpl<WordReviewMapper, WordRev
             wordReview.setNextReviewTime(null);
         } else {
             double factor = calculateAdjustmentFactor(wordReview);
+            // 调整复习间隔，将intervals列表中的每个元素乘以调整因子，然后将结果转换为整数。
             List<Integer> adjustedIntervals = intervals.stream()
                     .map(interval -> (int) (interval * factor))
                     .collect(Collectors.toList());
@@ -71,14 +81,23 @@ public class WordReviewServiceImpl extends ServiceImpl<WordReviewMapper, WordRev
         }
     }
 
+    private WordReview getByWordId(Integer wordId) {
+        QueryWrapper<WordReview> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("wordId", wordId);
+        return this.getOne(queryWrapper);
+    }
+
 
     @Override
-    public List<WordReview> getAllReviewsForToday() {
+    public List<WordReviewVO> getWordsToday(Integer wordBookId, Integer dailyNewWords, Integer dailyReviewWords) {
         // 调用mapper层方法获取今天的所有复习记录
         String token = request.getHeader("token");
         String userId = JwtUtil.validateToken(token);
-        // 当前时间,userId
-        return wordReviewMapper.getAllReviewsForToday(LocalDateTime.now(), Integer.parseInt(userId));
+
+        List<WordReviewVO> reviewWords = wordReviewMapper.getReviewWordsToday(Integer.parseInt(userId), wordBookId, dailyReviewWords);
+        List<WordReviewVO> newWords = wordReviewMapper.getNewWordsToday(Integer.parseInt(userId), wordBookId, dailyNewWords);
+        reviewWords.addAll(newWords);
+        return reviewWords;
     }
 
     @Override
@@ -106,6 +125,7 @@ public class WordReviewServiceImpl extends ServiceImpl<WordReviewMapper, WordRev
                 forgettingRate = 0.0;
         }
         // 使用指数函数来计算调整因子，遗忘率越大，调整因子越小
+        // 原型是e^(-x)
         return Math.exp(-forgettingRate);
     }
 

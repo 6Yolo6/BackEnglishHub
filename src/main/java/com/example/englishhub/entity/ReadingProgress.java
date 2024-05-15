@@ -31,14 +31,9 @@ public class ReadingProgress extends BaseEntity {
     private Integer eBookId;
 
     /**
-     * 总页数
+     * 当前进度
      */
-    private Integer totalPage;
-
-    /**
-     * 当前页码
-     */
-    private Integer currentPage;
+    private String progress;
 
     /**
      * 上次阅读时间

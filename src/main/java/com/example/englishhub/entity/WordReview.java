@@ -27,8 +27,8 @@ public class WordReview extends BaseEntity {
     @Schema(description = "单词ID，关联words表或word表的id")
     private Integer wordId;
 
-    @Schema(description = "单词库类别ID,关联word_book_category表的id")
-    private Integer wordBookCategoryId;
+    @Schema(description = "单词书ID,关联word_books表的id")
+    private Integer wordBookId;
 
     @Schema(description = "单词复习状态:1-forgotten,2-blurry,3-known,4-mastered")
     private Integer status;

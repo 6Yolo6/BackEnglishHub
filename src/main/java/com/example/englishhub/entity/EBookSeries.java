@@ -23,6 +23,11 @@ public class EBookSeries extends BaseEntity {
     private String name;
 
     /**
+     * 系列所属类别
+     */
+    private Integer categoryId;
+
+    /**
      * 是否可用0--不可用 1--可用
      */
     private Boolean useful;

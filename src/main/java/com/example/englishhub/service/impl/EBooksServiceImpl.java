@@ -3,8 +3,7 @@ package com.example.englishhub.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.englishhub.entity.EBookSeries;
-import com.example.englishhub.entity.EBookVO;
+import com.example.englishhub.entity.EBooksVO;
 import com.example.englishhub.entity.EBooks;
 import com.example.englishhub.mapper.EBookSeriesMapper;
 import com.example.englishhub.mapper.EBooksMapper;
@@ -32,8 +31,8 @@ public class EBooksServiceImpl extends ServiceImpl<EBooksMapper, EBooks> impleme
     private EBookSeriesMapper eBookSeriesMapper;
 
     @Override
-    public Page<EBooks> getAllEBooks(Integer pageNum, Integer pageSize) {
-        List<EBookVO> eBookVOS = eBooksMapper.getAllEBooks();
+    public Page<EBooksVO> getAllEBooks(Integer pageNum, Integer pageSize) {
+        List<EBooksVO> eBookVOS = eBooksMapper.getAllEBooks();
         Transform transform = new Transform();
         return transform.listToPage(eBookVOS, pageNum, pageSize);
     }

@@ -54,7 +54,7 @@ public class CodeGenerator {
                 })
                 .strategyConfig(builder -> {
                     // 设置需要生成的表名
-                    builder.addInclude("forgetting_curve")
+                    builder.addInclude("word_book_category")
                             // 设置过滤表前缀
                             .addTablePrefix("t_")
                             // Entity 配置

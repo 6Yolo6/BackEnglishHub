@@ -10,6 +10,9 @@ import com.example.englishhub.utils.JwtUtil;
 import com.example.englishhub.utils.MD5Util;
 import com.example.englishhub.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.example.englishhub.utils.Upload;
@@ -23,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
+@Tag(name = "用户管理")
 public class UserController {
 
     @Autowired
@@ -88,11 +93,11 @@ public class UserController {
     @Operation(summary = "用户登录")
     @PostMapping("/login")
     public Result login(@RequestBody User user) throws Exception {
-        System.out.println(user);
+//        System.out.println(user);
 
         Result result = new Result();
         User isUser = userService.getByName(user.getUsername());
-        System.out.println(isUser);
+//        System.out.println(isUser);
 
         if (isUser == null) {
             result.againLogin("用户名不正确");
@@ -110,6 +115,7 @@ public class UserController {
                 result.setData(map);
                 // 标记用户为活跃用户
                 userService.markUserActive(isUser.getId());
+                log.info("用户登录成功");
             }
             else
                 result.againLogin("密码错误");
@@ -173,7 +179,7 @@ public class UserController {
     @GetMapping("/getAll")
     public Result getAllUser(Integer pageNum, Integer pageSize) {
         Result result = new Result();
-        Page<User> page = userService.getAllUser(pageNum, pageSize);
+        Page<User> page = userService.page(new Page<>(pageNum, pageSize));
         List<User> user = page.getRecords();
         // 隐藏密码，盐值
         for (User user1:user) {
@@ -188,6 +194,7 @@ public class UserController {
     /**
      * 根据用户 ID 查询用户信息
      */
+    @Operation(summary = "根据用户 ID 查询用户信息")
     @GetMapping("/getById")
     public Result getById() {
         Result result=new Result();
@@ -212,33 +219,9 @@ public class UserController {
         return result;
     }
 
-    /**
-     * 删除用户信息
-     */
-    @DeleteMapping("/deleteById")
-    public Result deleteById() {
-        Result result=new Result();
-        String token = request.getHeader("token");
-//        System.out.println("token" + token);
-        String userId = JwtUtil.validateToken(token);
-        if (StringUtils.isBlank(userId)) {
-            result.fail("Token无效，请重新登录");
-            return result;
-        }
-
-        // 验证用户权限
-        User loginUser = userService.getById(Long.valueOf(userId));
-        if (!loginUser.getIsAdmin()) {
-            result.fail("您没有权限删除用户信息");
-            return result;
-        }
-
-        userService.removeById(Integer.valueOf(userId));
-        result.success("用户信息删除成功");
-        return result;
-    }
 
     //根据用户名查询用户信息
+    @Operation(summary = "根据用户名查询用户信息")
     @GetMapping("/getByName")
     public Result getByName(String username) {
         Result result=new Result();
@@ -253,7 +236,9 @@ public class UserController {
         }
         return result;
     }
+
     //获取用户id
+    @Operation(summary = "获取用户id")
     @GetMapping("/getId")
     public Result getId() {
         Result result = new Result();
