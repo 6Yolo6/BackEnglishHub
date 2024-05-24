@@ -46,40 +46,46 @@ public class LearningPlansController{
     /**
      * 新增数据
      *
-     * @param learningPlans 实体对象
+     * @param worBookId 单词书id
+     * @param dailyNewWords 每日新词数
+     * @param dailyReviewWords 每日复习数
+     * @param endDate 计划结束日期
      * @return 新增结果
      */
-    @Operation(summary = "新增数据")
-    @PostMapping("/add")
-    public Result add(@RequestBody LearningPlans learningPlans) {
-        Result result = new Result();
-        if (learningPlansService.addPlan(learningPlans)) {
-            result.success("新增成功");
-        } else {
-            result.fail("新增失败");
-        }
-        return result;
-    }
+//    @Operation(summary = "新增数据")
+//    @PostMapping("/add")
+//    public Result add(Integer worBookId, Integer dailyNewWords, Integer dailyReviewWords, String endDate) {
+//        Result result = new Result();
+//        if (learningPlansService.addPlan(worBookId, dailyNewWords, dailyReviewWords, endDate)) {
+//            result.success("新增成功");
+//        } else {
+//            result.fail("新增失败");
+//        }
+//        return result;
+//    }
 
 
 
     /**
-     * 修改数据
+     * 新增或修改数据
      *
-     * @param learningPlans 实体对象
+     * @param worBookId 单词书id
+     * @param dailyNewWords 每日新词数
+     * @param dailyReviewWords 每日复习数
+     * @param endDate 计划结束日期
      * @return 修改结果
      */
-    @Operation(summary = "修改数据")
-    @PostMapping("/update")
-    public Result update(@RequestBody LearningPlans learningPlans) {
-        Result result = new Result();
-        if (learningPlansService.updateById(learningPlans)) {
-            result.success("修改成功");
-        } else {
-            result.fail("修改失败");
-        }
-        return result;
+    @Operation(summary = "新增或修改数据")
+@PostMapping("/saveOrUpdate")
+public Result saveOrUpdate(Integer worBookId, Integer dailyNewWords, Integer dailyReviewWords, String endDate) {
+    Result result = new Result();
+    if (learningPlansService.upsertPlan(worBookId, dailyNewWords, dailyReviewWords, endDate)) {
+        result.success("操作成功");
+    } else {
+        result.fail("操作失败");
     }
+    return result;
+}
 
 
     /**

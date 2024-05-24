@@ -23,4 +23,6 @@ public interface EBookSeriesService extends IService<EBookSeries> {
     boolean deleteByIds(String ids);
 
     boolean updateUseful(Integer seriesId);
+
+    List<EBookSeries> getByCategoryId(Integer categoryId);
 }

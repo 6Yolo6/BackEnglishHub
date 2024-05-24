@@ -1,7 +1,10 @@
 package com.example.englishhub.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.englishhub.entity.Word;
+import com.example.englishhub.entity.WordReview;
+import com.example.englishhub.entity.WordReviewVO;
 import com.example.englishhub.mapper.WordMapper;
 import com.example.englishhub.service.WordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -31,6 +34,23 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         Transform transform = new Transform();
         int offset = (pageNum - 1) * pageSize;
         List<Word> wordList = wordMapper.getPageByWordBookId(wordBookId, offset, pageSize);
+        System.out.println("单词列表" + wordList);
         return transform.listToPage(wordList, pageNum, pageSize);
+    }
+
+    @Override
+    public List<WordReviewVO> searchByName(String word) {
+        // 模糊查询15条
+        return wordMapper.searchByName(word);
+    }
+
+    @Override
+    public List<WordReviewVO> findWordsByNames(List<String> words) {
+        return wordMapper.findWordsByNames(words);
+    }
+
+    @Override
+    public WordReviewVO getDetail(Integer wordId) {
+        return wordMapper.getDetail(wordId);
     }
 }

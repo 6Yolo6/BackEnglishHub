@@ -42,42 +42,76 @@ public class WordReviewServiceImpl extends ServiceImpl<WordReviewMapper, WordRev
     private HttpServletRequest request;
 
     @Override
-    public void adjustReviewIntervals(Integer wordId, Integer wordBookId) {
+    public void adjustReviewIntervals(Integer wordId, Integer wordBookId, Integer status) {
         String token = request.getHeader("token");
         String userId = JwtUtil.validateToken(token);
         QueryWrapper<WordReview> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("wordId", wordId);
-        queryWrapper.eq("userId", Integer.parseInt(userId));
-        queryWrapper.eq("wordBookId", wordBookId);
+        queryWrapper.eq("word_id", wordId);
+        queryWrapper.eq("user_id", Integer.parseInt(userId));
+        queryWrapper.eq("word_book_id", wordBookId);
 
         WordReview wordReview = this.getOne(queryWrapper);
 
-        List<Integer> intervals = Arrays.stream(wordReview.getReviewIntervals().split(","))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
+        if (wordReview == null) {
+            // 新学单词，使用默认的复习间隔并新增记录
+            String defaultIntervals = "30,180,720,1440,2880,5760,10080,21600";
+            List<Integer> intervals = Arrays.stream(defaultIntervals.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
 
-        if (wordReview.getStatus() == 4) { // 单词已掌握
-            // 不再进行复习
-            wordReview.setNextReviewTime(null);
-        } else {
-            double factor = calculateAdjustmentFactor(wordReview);
+            wordReview = new WordReview();
+            wordReview.setUserId(Integer.parseInt(userId));
+            wordReview.setWordId(wordId);
+            wordReview.setWordBookId(wordBookId);
+            wordReview.setStatus(status);
+            wordReview.setReviewIntervals(defaultIntervals);
+            wordReview.setReviewIntervalIndex(0);
+
+            // 计算调整因子
+            double factor = calculateAdjustmentFactor(status);
             // 调整复习间隔，将intervals列表中的每个元素乘以调整因子，然后将结果转换为整数。
             List<Integer> adjustedIntervals = intervals.stream()
                     .map(interval -> (int) (interval * factor))
                     .collect(Collectors.toList());
-            // 更新复习间隔，将adjustedIntervals列表中的每个元素转换为字符串，然后使用逗号（,）将这些字符串连接起来。
             wordReview.setReviewIntervals(adjustedIntervals.stream()
                     .map(Object::toString)
                     .collect(Collectors.joining(",")));
-//            wordReview.setReviewIntervals(String.join(",", adjustedIntervals.stream().map(Object::toString).collect(Collectors.toList())));
 
-            // 确保索引在合理范围内
-            int newIndex = (wordReview.getReviewIntervalIndex() + 1) % adjustedIntervals.size();
-            wordReview.setReviewIntervalIndex(newIndex);
-            wordReview.setNextReviewTime(LocalDateTime.now().plusMinutes(adjustedIntervals.get(newIndex)));
+            // 设置下次复习时间
+            if (status == 4) { // 单词已掌握
+                wordReview.setNextReviewTime(null);
+            } else {
+                int newIndex = 0;
+                wordReview.setReviewIntervalIndex(newIndex);
+                wordReview.setNextReviewTime(LocalDateTime.now().plusMinutes(adjustedIntervals.get(newIndex)));
+            }
+            this.save(wordReview);
+        } else {
+            List<Integer> intervals = Arrays.stream(wordReview.getReviewIntervals().split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
 
-            this.updateById(wordReview);
+            if (status == 4) { // 单词已掌握
+                // 不再进行复习
+                wordReview.setNextReviewTime(null);
+            } else {
+                double factor = calculateAdjustmentFactor(status);
+                // 调整复习间隔，将intervals列表中的每个元素乘以调整因子，然后将结果转换为整数。
+                List<Integer> adjustedIntervals = intervals.stream()
+                        .map(interval -> (int) (interval * factor))
+                        .collect(Collectors.toList());
+                // 更新复习间隔，将adjustedIntervals列表中的每个元素转换为字符串，然后使用逗号（,）将这些字符串连接起来。
+                wordReview.setReviewIntervals(adjustedIntervals.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(",")));
 
+                // 确保索引在合理范围内
+                int newIndex = (wordReview.getReviewIntervalIndex() + 1) % adjustedIntervals.size();
+                wordReview.setReviewIntervalIndex(newIndex);
+                wordReview.setNextReviewTime(LocalDateTime.now().plusMinutes(adjustedIntervals.get(newIndex)));
+
+                this.updateById(wordReview);
+            }
         }
     }
 
@@ -109,9 +143,16 @@ public class WordReviewServiceImpl extends ServiceImpl<WordReviewMapper, WordRev
         return this.list(queryWrapper);
     }
 
-    public double calculateAdjustmentFactor(WordReview wordReview) {
+    public List<WordReview> getWordsByUserId() {
+        String token = request.getHeader("token");
+        String userId = JwtUtil.validateToken(token);
+
+        return getAllWordsForUser(Integer.parseInt(userId));
+    }
+
+    public double calculateAdjustmentFactor(int status) {
         double forgettingRate;
-        switch (wordReview.getStatus()) {
+        switch (status) {
             case 1: // 忘记forgotten
                 forgettingRate = 0.5;
                 break;

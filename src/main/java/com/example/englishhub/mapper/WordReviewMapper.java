@@ -52,7 +52,7 @@ public interface WordReviewMapper extends BaseMapper<WordReview> {
 
 
     @Select("SELECT w.id, w.word, w.phonetic_uk, w.phonetic_us, w.definition," +
-            " wd.audio_url, wd.video_url, wd.definition AS definitionDetail, wd.subtext, 0 AS reviewStatus" +
+            " wd.audio_url, wd.video_url, wd.definition AS definitionDetail, wd.subtext" +
             " FROM word_relation wr" +
             " JOIN word w ON wr.word_id = w.id" +
             " JOIN words wd ON w.words_id = wd.id" +
@@ -63,7 +63,7 @@ public interface WordReviewMapper extends BaseMapper<WordReview> {
     List<WordReviewVO> getNewWordsToday(Integer userId, Integer wordBookId, Integer dailyNewWords);
 
     @Select("SELECT w.id, w.word, w.phonetic_uk, w.phonetic_us, w.definition," +
-            " wd.audio_url, wd.video_url, wd.definition AS definitionDetail, wd.subtext, wr.status AS reviewStatus" +
+            " wd.audio_url, wd.video_url, wd.definition AS definitionDetail, wd.subtext" +
             " FROM word_review wr" +
             " JOIN word w ON wr.word_id = w.id" +
             " JOIN words wd ON w.words_id = wd.id" +

@@ -7,8 +7,9 @@ import com.example.englishhub.entity.Words;
 
 import java.util.Map;
 public interface WordsService extends IService<Words> {
-    Page<Words> searchByName(String word, Integer pageNum, Integer pageSize);
+//    Page<Words> searchByName(String word, Integer pageNum, Integer pageSize);
 
+    Words searchByName(String word);
     Words updateWords(Words words);
 
     void deleteByIds(String ids);

@@ -37,12 +37,12 @@ public class LearningPlans extends BaseEntity {
     /**
      * 每日新学词数
      */
-    private Integer daily_new_words;
+    private Integer dailyNewWords;
 
     /**
      * 每日复习词数
      */
-    private Integer daily_review_words;
+    private Integer dailyReviewWords;
 
     /**
      * 计划开始日期

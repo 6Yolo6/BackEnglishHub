@@ -17,11 +17,9 @@ public class WordReviewVO {
     private String word; // 单词，来自word表
     private String phoneticUk; // 英式音标，来自word表
     private String phoneticUs; // 美式音标，来自word表
-    private Integer wordBookId; // 单词所属单词书id，来自word_books表
     private String definition; // 单词释义，来自word表
     private String wordsDefinition; // 单词释义详细信息，来自words表
     private String audioUrl; // 单词发音url，来自words表
     private String videoUrl; // 单词视频url，来自words表
     private String subtext; // 单词视频字幕，来自words表
-    private Integer reviewStatus; // 复习状态，来自word_review表
 }

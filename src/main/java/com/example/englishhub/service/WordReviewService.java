@@ -14,9 +14,11 @@ import java.util.List;
 public interface WordReviewService extends IService<WordReview> {
 
 
-    void adjustReviewIntervals(Integer wordId, Integer wordBookId);
+    void adjustReviewIntervals(Integer wordId, Integer wordBookId, Integer status);
 
     List<WordReviewVO> getWordsToday(Integer wordBookId, Integer dailyNewWords, Integer dailyReviewWords);
 
     List<WordReview> getAllWordsForUser(Integer userId);
+
+    List<WordReview> getWordsByUserId();
 }

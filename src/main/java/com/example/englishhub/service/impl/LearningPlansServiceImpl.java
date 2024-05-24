@@ -5,6 +5,9 @@ import com.example.englishhub.entity.LearningPlans;
 import com.example.englishhub.mapper.LearningPlansMapper;
 import com.example.englishhub.service.LearningPlansService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.englishhub.utils.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -21,16 +24,30 @@ import java.util.List;
 @Service
 public class LearningPlansServiceImpl extends ServiceImpl<LearningPlansMapper, LearningPlans> implements LearningPlansService {
 
-    @Override
-    public boolean addPlan(LearningPlans learningPlans) {
-        return save(learningPlans);
-    }
+    @Autowired
+    private HttpServletRequest request;
 
     @Override
-    public LearningPlans getByUserIdAndCategoryId(Integer userId, Integer wordBookCategoryId) {
-        QueryWrapper<LearningPlans> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id", userId);
-        queryWrapper.eq("word_book_category_id", wordBookCategoryId);
-        return getOne(queryWrapper);
+public boolean upsertPlan(Integer worBookId, Integer dailyNewWords, Integer dailyReviewWords, String endDate) {
+    QueryWrapper<LearningPlans> queryWrapper = new QueryWrapper<>();
+    String token = request.getHeader("token");
+    String userId = JwtUtil.validateToken(token);
+    queryWrapper.eq("word_book_id", worBookId);
+    queryWrapper.eq("user_id", Integer.parseInt(userId));
+    LearningPlans learningPlans = getOne(queryWrapper);
+    if (learningPlans == null) {
+        learningPlans = new LearningPlans();
+        learningPlans.setUserId(Integer.parseInt(userId));
+        learningPlans.setWordBookId(worBookId);
+        learningPlans.setStartDate(java.time.LocalDateTime.now());
     }
+    learningPlans.setDailyNewWords(dailyNewWords);
+    learningPlans.setDailyReviewWords(dailyReviewWords);
+    learningPlans.setEndDate(java.time.LocalDateTime.parse(endDate + " 00:00:00"));
+    if (learningPlans.getId() == null) {
+        return save(learningPlans);
+    } else {
+        return updateById(learningPlans);
+    }
+}
 }

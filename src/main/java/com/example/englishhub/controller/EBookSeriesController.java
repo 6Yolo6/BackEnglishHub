@@ -44,6 +44,22 @@ public class EBookSeriesController {
         return result;
     }
 
+    /**
+     * 根据categoryId查询电子书系列列表
+     * @param categoryId
+     *
+     * @return 所有有效数据
+     */
+    @Operation(summary = "根据categoryId查询电子书有效系列列表")
+    @GetMapping("/getByCategoryId")
+    public Result getByCategoryId(Integer categoryId) {
+        Result result = new Result();
+        List<EBookSeries> eBookSeriesList = eBookSeriesService.getByCategoryId(categoryId);
+        result.setData(eBookSeriesList);
+        result.success("根据categoryId查询电子书系列列表成功");
+        return result;
+    }
+
 
     /**
      * 分页查询所有数据

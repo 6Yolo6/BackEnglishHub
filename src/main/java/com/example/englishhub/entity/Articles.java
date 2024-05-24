@@ -34,11 +34,13 @@ public class Articles extends BaseEntity{
     //图片链接
     private String urlToImage;
     //发布时间
-    private Date publishedAt;
+    private Date publishTime;
     //文章内容
     private String content;
     //来源名称
     private String sourceName;
+    // 单词数量
+    private Integer wordCount;
 
 }
 

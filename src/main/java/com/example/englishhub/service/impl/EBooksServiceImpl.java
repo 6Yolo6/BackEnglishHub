@@ -46,6 +46,10 @@ public class EBooksServiceImpl extends ServiceImpl<EBooksMapper, EBooks> impleme
         if (existingEBook != null) {
             throw new RuntimeException("电子书已存在");
         }
+        // 确保为'title'字段赋值
+        if (eBooks.getTitle() == null || eBooks.getTitle().isEmpty()) {
+            throw new RuntimeException("电子书标题不能为空");
+        }
         return save(eBooks);
     }
 

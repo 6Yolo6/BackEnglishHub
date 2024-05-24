@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 单词书表(WordBooks)表控制层
  *
@@ -47,7 +49,6 @@ public class WordBooksController {
         return result;
     }
 
-
     /**
      * 根据userId查询单条单词书数据
      *
@@ -81,11 +82,38 @@ public class WordBooksController {
 
 
     /**
-     * 删除数据
+     * 根据categoryId分页查询单词书数据
      *
-     * @param idList 主键结合
-     * @return 删除结果
+     * @param categoryId
+     * @param pageNum  页码
+     * @param pageSize 每页数量
+     * @return 查询结果
      */
+    @Operation(summary = "根据categoryId分页查询单词书数据")
+    @GetMapping("/getPageByCategoryId")
+    public Result getPageByCategoryId(Integer categoryId, Integer pageNum, Integer pageSize) {
+        Result result = new Result();
+        Page<WordBooks> wordBooks = wordBooksService.getByCategoryId(categoryId, pageNum, pageSize);
+        result.setData(wordBooks);
+        result.success("根据categoryId查询单词书数据成功");
+        return result;
+    }
+
+    /**
+     * 根据categoryId查询单词书数据
+     *
+     * @param categoryId
+     * @return 查询结果
+     */
+    @Operation(summary = "根据categoryId查询单词书数据")
+    @GetMapping("/getByCategoryId")
+    public Result getByCategoryId(Integer categoryId) {
+        Result result = new Result();
+        List<WordBooks> wordBooks = wordBooksService.getByCate(categoryId);
+        result.setData(wordBooks);
+        result.success("根据categoryId查询单词书数据成功");
+        return result;
+    }
 
 }
 

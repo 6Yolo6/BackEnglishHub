@@ -6,6 +6,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -21,7 +22,7 @@ import java.io.Serializable;
 
 @Data
 @TableName("e_books")
-@Schema(description = "电子书表(EBooks)表实体类")
+@Tag(name = "EBooks", description = "电子书表(EBooks)表实体类")
 public class EBooks extends BaseEntity {
 
     //名称
@@ -47,6 +48,18 @@ public class EBooks extends BaseEntity {
     @UpdateTimestamp
     private Timestamp updateTime;
 
-
+    @Override
+    public String toString() {
+        return "EBooks{" +
+                "id=" + getId() +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", filePath='" + filePath + '\'' +
+                ", fileType='" + fileType + '\'' +
+                ", seriesId=" + seriesId +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
+    }
 }
 

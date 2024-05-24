@@ -27,12 +27,20 @@ import java.util.*;
 public class WordsServiceImpl extends ServiceImpl<WordsMapper, Words> implements WordsService {
 
 
+//    @Override
+//    public Page<Words> searchByName(String word, Integer pageNum, Integer pageSize) {
+//        QueryWrapper<Words> wrapper = new QueryWrapper<>();
+//        Page<Words> page = new Page<>(pageNum, pageSize);
+//        wrapper.like("word", word);
+//        return this.page(page, wrapper);
+//    }
+
+
     @Override
-    public Page<Words> searchByName(String word, Integer pageNum, Integer pageSize) {
+    public Words searchByName(String word) {
         QueryWrapper<Words> wrapper = new QueryWrapper<>();
-        Page<Words> page = new Page<>(pageNum, pageSize);
-        wrapper.like("word", word);
-        return this.page(page, wrapper);
+        wrapper.eq("word", word);
+        return this.getOne(wrapper);
     }
 
     @Override

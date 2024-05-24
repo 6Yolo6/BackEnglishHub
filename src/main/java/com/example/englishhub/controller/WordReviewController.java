@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: hahaha
@@ -34,12 +35,18 @@ public class WordReviewController {
      */
     @Operation(summary = "调整复习")
     @PostMapping("/adjust")
-    public Result adjustReviewIntervals(@RequestParam Integer wordId, @RequestParam Integer wordBookId) {
-        wordReviewService.adjustReviewIntervals(wordId, wordBookId);
-        Result result = new Result();
-        result.success("调整复习成功");
-        return result;
-    }
+    public Result adjustReviewIntervals(@RequestBody Map<String, Integer> body) {
+    Integer wordId = body.get("wordId");
+    Integer wordBookId = body.get("wordBookId");
+    Integer status = body.get("status");
+//    System.out.println("wordId = " + wordId);
+//    System.out.println("wordBookId = " + wordBookId);
+//    System.out.println("status = " + status);
+    wordReviewService.adjustReviewIntervals(wordId, wordBookId, status);
+    Result result = new Result();
+    result.success("调整复习成功");
+    return result;
+}
 
     /**
      * 新增数据
@@ -63,4 +70,5 @@ public class WordReviewController {
         result.success("获取当天复习单词成功");
         return result;
     }
+
 }

@@ -32,7 +32,7 @@ public interface WordBooksMapper extends BaseMapper<WordBooks> {
             "DATEDIFF(lp.end_date, lp.start_date) + 1 AS totalDays, " +
             "COUNT(DISTINCT wr.id) AS learnedWords, " +
             "SUM(CASE WHEN wr.status = 4 THEN 1 ELSE 0 END) AS masteredWords, " +
-            "SUM(CASE WHEN DATE(wr.create_time) = CURDATE() THEN 1 ELSE 0 END) AS learnedTodayNew, " +
+            "SUM(CASE WHEN DATE(wr.create_time) = CURDATE() THEN 1 ELSE 0 END) AS learnedToday, " +
             "SUM(CASE WHEN DATE(wr.last_review_time) = CURDATE() THEN 1 ELSE 0 END) AS reviewedToday, " +
             "COUNT(DISTINCT DATE(wr.create_time)) AS learnedDays " +
             "FROM word_books wb " +

@@ -103,11 +103,18 @@ public class ArticlesController {
 
 
     /**
-     * 删除数据
+     * 获取最新条数据
      *
-     * @param idList 主键结合
-     * @return 删除结果
+     * @return 返回结果
      */
-
+    @GetMapping("/getTop")
+    @Operation(summary = "获取最新条文章资源")
+    public Result getTop(Integer top) {
+        Result result = new Result();
+        List<Articles> articlesList = articlesService.list(new QueryWrapper<Articles>().orderByDesc("publish_time").last("limit " + top));
+        result.setData(articlesList);
+        result.success("获取最新3条文章资源成功");
+        return result;
+    }
 }
 

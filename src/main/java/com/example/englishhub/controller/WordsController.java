@@ -42,12 +42,28 @@ public class WordsController {
     }
 
     // 分页搜索单词
+//    @Operation(summary = "根据单词名搜索单词")
+//    @GetMapping("/searchByName")
+//    public Result searchByName(String word, Integer pageNum, Integer pageSize) {
+//        Result result = new Result();
+//        Page<Words> wordsPage = wordsService.searchByName(word, pageNum, pageSize);
+//        result.setData(wordsPage);
+//        // 缓存到redis，记录用户搜索历史
+//        String token = request.getHeader("token");
+//        if (token == null) {
+//            return result;
+//        }
+//        String userId = JwtUtil.validateToken(token);
+//        redisUtils.zAdd("searchHistory:" + userId, word, System.currentTimeMillis());
+//        return result;
+//    }
+
+    // 根据单词名搜索单词
     @Operation(summary = "根据单词名搜索单词")
     @GetMapping("/searchByName")
-    public Result searchByName(String word, Integer pageNum, Integer pageSize) {
+    public Result searchByName(String word) {
         Result result = new Result();
-        Page<Words> wordsPage = wordsService.searchByName(word, pageNum, pageSize);
-        result.setData(wordsPage);
+        result.setData(wordsService.searchByName(word));
         // 缓存到redis，记录用户搜索历史
         String token = request.getHeader("token");
         if (token == null) {

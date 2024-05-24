@@ -16,11 +16,12 @@ public class WordBooksVO {
     private String name;
     private Integer learnedToday;
     private Integer toLearnToday;
+    private Integer reviewedToday;
     private Integer toReviewToday;
     private Integer learnedWords;
     private Integer planStatus;
     private Integer totalWords;
-    private Integer masterWords;
+    private Integer masteredWords;
     private Integer learnedDays;
     private Integer totalDays;
 }

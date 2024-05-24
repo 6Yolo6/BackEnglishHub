@@ -97,5 +97,18 @@ public class ForgettingCurveController {
         return result;
     }
 
+    /**
+     * 计算用户的遗忘曲线并保存
+     * @return 结果
+     */
+    @Operation(summary = "计算用户的遗忘曲线并保存")
+    @GetMapping("/updateByUserId")
+    public Result updateByUserId() {
+        Result result = new Result();
+        List<WordReview> allWords = wordReviewService.getWordsByUserId();
+        forgettingCurveService.calculateRetentionRatesAndSave(allWords);
+        result.success("更新成功");
+        return result;
+    }
 }
 

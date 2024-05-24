@@ -158,6 +158,21 @@ public class UserController {
         return result;
     }
 
+    @Operation(summary = "修改用户信息")
+    @PostMapping("/updateUser")
+    public Result updateUser(@RequestBody Map<String, String> updates) {
+        Result result = new Result();
+        try {
+            User user = userService.updateU(updates);
+            result.setData(user);
+            result.success("更新成功");
+
+        } catch (Exception e) {
+            result.fail("更新失败");
+        }
+        return result;
+    }
+
     /**
      * 验证Token
      */

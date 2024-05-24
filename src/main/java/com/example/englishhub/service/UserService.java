@@ -34,4 +34,5 @@ public interface UserService extends IService<User> {
     Boolean updateAvatar(Integer userId, String avatar);
 
 
+    User updateU(Map<String, String> updates);
 }

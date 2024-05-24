@@ -13,7 +13,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface LearningPlansService extends IService<LearningPlans> {
 
-    boolean addPlan(LearningPlans learningPlans);
 
-    LearningPlans getByUserIdAndCategoryId(Integer userId, Integer wordBookCategoryId);
+    boolean upsertPlan(Integer worBookId, Integer dailyNewWords, Integer dailyReviewWords, String endDate);
 }

@@ -86,7 +86,7 @@ public class EBookCategoryController {
      */
     @Operation(summary = "修改数据")
     @PostMapping("/update")
-    public Result update(EBookCategory eBookCategory) {
+    public Result update(@RequestBody EBookCategory eBookCategory) {
         Result result = new Result();
         if (eBookCategoryService.updateById(eBookCategory)) {
             result.success("修改数据成功");

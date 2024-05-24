@@ -9,6 +9,7 @@ import com.example.englishhub.service.UserService;
 import com.example.englishhub.utils.JwtUtil;
 import com.example.englishhub.utils.MD5Util;
 import com.example.englishhub.utils.RedisUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,6 +32,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Autowired
+    private HttpServletRequest request;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -134,6 +138,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setAvatar(avatar);
         this.updateById(user);
         return true;
+    }
+
+    @Override
+    public User updateU(Map<String, String> updates) {
+
+        String token = request.getHeader("token");
+        String userId = JwtUtil.validateToken(token);
+
+        User user = this.getById(Integer.parseInt(userId));
+
+        for (Map.Entry<String, String> entry : updates.entrySet()) {
+            switch (entry.getKey()) {
+                case "username":
+                    user.setUsername(entry.getValue());
+                    break;
+                case "email":
+                    user.setEmail(entry.getValue());
+                    break;
+                case "telephone":
+                    user.setTelephone(entry.getValue());
+                    break;
+                case "avatar":
+                    user.setAvatar(entry.getValue());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid key: " + entry.getKey());
+            }
+        }
+
+
+
+        return user;
     }
 
 

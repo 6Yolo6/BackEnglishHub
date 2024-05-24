@@ -56,6 +56,15 @@ public class EBookSeriesServiceImpl extends ServiceImpl<EBookSeriesMapper, EBook
     }
 
     @Override
+    public List<EBookSeries> getByCategoryId(Integer categoryId) {
+        // 查询有效的电子书系列
+        QueryWrapper<EBookSeries> wrapper = new QueryWrapper<>();
+        wrapper.eq("category_id", categoryId);
+        wrapper.eq("useful", 1);
+        return this.list(wrapper);
+    }
+
+    @Override
     public boolean deleteByIds(String ids) {
         // 逻辑删除
         String[] idArray = ids.split(",");

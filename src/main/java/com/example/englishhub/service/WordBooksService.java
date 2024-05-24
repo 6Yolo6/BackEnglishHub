@@ -1,8 +1,11 @@
 package com.example.englishhub.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.englishhub.entity.WordBooks;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.englishhub.entity.WordBooksVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +18,8 @@ import com.example.englishhub.entity.WordBooksVO;
 public interface WordBooksService extends IService<WordBooks> {
 
     WordBooksVO getByUserId();
+
+    Page<WordBooks> getByCategoryId(Integer categoryId, Integer pageNum, Integer pageSize);
+
+    List<WordBooks> getByCate(Integer categoryId);
 }

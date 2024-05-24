@@ -1,6 +1,7 @@
 package com.example.englishhub.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.englishhub.entity.EBooksVO;
 import com.example.englishhub.entity.EBooks;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * 电子书表(EBooks)表控制层
  *
@@ -24,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/eBooks")
 @Tag(name = "电子书管理")
-public class EBooksController{
+public class EBooksController {
     /**
      * 服务对象
      */
@@ -48,13 +51,37 @@ public class EBooksController{
         return result;
     }
 
+    /**
+     * 通过seriesId查询电子书列表
+     *
+     * @param seriesId 系列id
+     * @return 所有数据
+     */
+    @Operation(summary = "通过seriesId查询电子书列表")
+    @GetMapping("/getBySeriesId")
+    public Result getBySeriesId(Integer seriesId) {
+        Result result = new Result();
+        List<EBooks> eBooksList = eBooksService.list(new QueryWrapper<EBooks>().eq("series_id", seriesId));
+        result.setData(eBooksList);
+        result.success("通过seriesId查询电子书列表成功");
+        return result;
+    }
+
 
     /**
-     * 通过主键查询单条数据
+     * 获取最新5条数据
      *
-     * @param id 主键
-     * @return 单条数据
+     * @return 返回数据
      */
+    @Operation(summary = "获取最新5条电子书")
+    @GetMapping("/getTop5")
+    public Result getTop5() {
+        Result result = new Result();
+        List<EBooks> eBooksList = eBooksService.list(new QueryWrapper<EBooks>().orderByDesc("create_time").last("limit 5"));
+        result.setData(eBooksList);
+        result.success("获取最新5条电子书成功");
+        return result;
+    }
 
 
     /**
@@ -86,6 +113,9 @@ public class EBooksController{
     @Operation(summary = "更新电子书信息")
     @PostMapping("/update")
     public Result update(@RequestBody EBooks eBooks) {
+        System.out.println("eBooks = " + eBooks);
+
+        System.out.println("eBooks。title " + eBooks.getTitle());
         Result result = new Result();
         if (eBooksService.updateById(eBooks)) {
             result.success("更新电子书信息成功");
@@ -113,7 +143,7 @@ public class EBooksController{
     @Operation(summary = "上传电子书")
     @PostMapping("/uploadEBook")
     public Result uploadEBook(@RequestParam(value = "file") MultipartFile file,
-                              @RequestParam(value = "id") Integer id) {
+                              @RequestParam(value = "id", required = false) Integer id) {
         System.out.println("file = " + file);
         Result result = new Result();
         Upload fileUpload=new Upload();

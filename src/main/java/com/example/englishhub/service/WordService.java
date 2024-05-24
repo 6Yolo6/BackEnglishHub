@@ -3,6 +3,10 @@ package com.example.englishhub.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.englishhub.entity.Word;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.englishhub.entity.WordReview;
+import com.example.englishhub.entity.WordReviewVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +19,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface WordService extends IService<Word> {
 
     Page<Word> getPageByWordBookId(Integer wordBookId, Integer pageNum, Integer pageSize);
+
+    List<WordReviewVO> searchByName(String word);
+
+    List<WordReviewVO> findWordsByNames(List<String> words);
+
+    WordReviewVO getDetail(Integer wordId);
 }
